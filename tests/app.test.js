@@ -14,7 +14,7 @@ const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const source = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const key = 'yijing-offline-v2', legacyKey = 'yijing-offline-v1';
 
-function boot(saved, blockedStorage = false) {
+function boot(saved, blockedStorage = false, keepWelcome = false) {
   class Element {
     constructor() {
       this.children = []; this.events = {}; this.attrs = {}; this.style = {}; this.dataset = {};
@@ -45,6 +45,7 @@ function boot(saved, blockedStorage = false) {
     Blob, URL, console, addEventListener() {}, Xiangqi: E, XiangqiLevels: levels, XiangqiChapters: chapters, createXiangqi: globalThis.createXiangqi };
   context.window = context;
   vm.runInNewContext(source, context, { filename: 'app.js' });
+  if (!keepWelcome && elements['welcome-dialog'].open) elements['welcome-start'].click();
   return {
     elements, storage, document,
     data: () => JSON.parse(storage.get(key)),
@@ -54,6 +55,45 @@ function boot(saved, blockedStorage = false) {
     drain: () => { let count = 0; while (timers.size) { assert(++count < 40, 'timer loop should settle'); const [id, task] = [...timers].sort((a, b) => a[1].at - b[1].at)[0]; timers.delete(id); now = task.at; task.fn(); } }
   };
 }
+
+test('new players see the guide once and can play immediately after dismissing it', () => {
+  const app = boot(undefined, false, true);
+  assert.equal(app.elements['welcome-dialog'].open, true);
+  assert.equal(app.data().introSeen, false);
+  app.click('welcome-start');
+  assert.equal(app.elements['welcome-dialog'].open, false);
+  assert.equal(app.data().introSeen, true);
+  assert.equal(boot(app.data(), false, true).elements['welcome-dialog'].open, false);
+  app.move(18, 23);
+  assert.equal(app.data().progress[0], 3);
+});
+
+test('welcome can open rules or be dismissed with Escape without resetting the game', () => {
+  const app = boot(undefined, false, true);
+  app.click('welcome-rules');
+  assert.equal(app.elements['welcome-dialog'].open, false);
+  assert.equal(app.elements['help-dialog'].open, true);
+  assert.equal(app.data().introSeen, true);
+  const other = boot(undefined, false, true);
+  let prevented = false;
+  other.elements['welcome-dialog'].events.cancel({ preventDefault() { prevented = true; } });
+  assert(prevented);
+  assert.equal(other.elements['welcome-dialog'].open, false);
+  other.move(18, 23);
+  assert.equal(other.data().progress[0], 3);
+});
+
+test('existing saves skip the welcome and blocked storage still allows play', () => {
+  for (const version of [1, 2]) {
+    const app = boot({ version, progress: [3], sessions: {} }, false, true);
+    assert.equal(app.elements['welcome-dialog'].open, false);
+    assert.equal(app.data().progress[0], 3);
+  }
+  const app = boot(undefined, true, true);
+  app.click('welcome-start');
+  app.move(18, 23);
+  assert.equal(app.elements['result-dialog'].open, true);
+});
 
 test('first win awards three stars and unlocks only the next level', () => {
   const app = boot(); app.move(18, 23);

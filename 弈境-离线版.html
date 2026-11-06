@@ -13,6 +13,17 @@
 
 @media (min-width: 641px) { .play-panel { width: 100%; max-width: min(580px, calc((100svh - 150px) * .86)); margin-inline: auto; } }
 
+.welcome-dialog { width:480px; max-width:calc(100vw - 32px); }
+.welcome-dialog h2 { font:30px var(--serif); margin:12px 0; }
+.welcome-steps { padding-left:25px; margin:24px 0; }
+.welcome-steps li { padding:0 0 16px 8px; color:var(--green); }
+.welcome-steps strong,.welcome-steps span { display:block; }
+.welcome-steps strong { font-size:15px; }
+.welcome-steps span { color:#777e6f; font-size:12px; margin-top:4px; }
+.welcome-tip { font-size:12px; color:#777e6f; background:#edf0e3; padding:14px; border-radius:6px; margin:0 0 22px; }
+.welcome-dialog .text-button { display:block; margin:14px auto 0; }
+@media(max-width:640px) { .welcome-dialog { padding:28px 23px; } }
+
 /* Ten chapters keep the hundred-level campaign easy to browse on every screen. */
 .chapter-picker select { width:100%; min-width:0; border:1px solid #dce1d0; border-radius:5px; padding:9px 7px; background:#f5f6ec; color:#526649; font-size:11px; }
 .chapter-description { font-size:9px; color:#969d88; line-height:1.8; margin:10px 1px 13px; }
@@ -131,6 +142,20 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div class="sr-only" id="live-status" aria-live="polite"></div>
+
+  <dialog id="welcome-dialog" class="welcome-dialog" aria-labelledby="welcome-title" aria-describedby="welcome-intro">
+    <span class="eyebrow">弈境 · 百关象棋</span>
+    <h2 id="welcome-title">你的第一步好棋。</h2>
+    <p id="welcome-intro" class="dialog-subtitle">你执红棋，电脑执黑棋。三步就能开始。</p>
+    <ol class="welcome-steps">
+      <li><strong>选一枚红棋</strong><span>点一下，棋盘就会标出可走的位置。</span></li>
+      <li><strong>点亮起的落点</strong><span>绿点可以落子，圈起的黑棋可以吃掉。</span></li>
+      <li><strong>和电脑轮流走</strong><span>封住黑将的退路，赢一关，解锁下一关。</span></li>
+    </ol>
+    <p class="welcome-tip">拿不准就点「给点提示」，想换个思路就点「悔一步」。进度自动保存，下次接着下。</p>
+    <button id="welcome-start" class="primary-button" autofocus>开始下棋 <svg><use href="#i-arrow"/></svg></button>
+    <button id="welcome-rules" class="text-button">先看看棋子怎么走</button>
+  </dialog>
 
   <dialog id="help-dialog" class="help-dialog"><button class="dialog-close icon-button" data-close="help-dialog" aria-label="关闭玩法说明"><svg><use href="#i-close"/></svg></button><span class="eyebrow">A LITTLE GUIDE</span><h2>落子之前，认识一下。</h2><p class="dialog-subtitle">你执红，电脑执黑。点选棋子，再点击亮起的位置落子。</p><div class="help-grid"><div><b>车</b><p><strong>直来直往</strong>沿横线、竖线行走，途中不能有棋子。</p></div><div><b>马</b><p><strong>日字出发</strong>走“日”字；直行第一格被占，就是蹩马腿。</p></div><div><b>炮</b><p><strong>隔子打子</strong>平时走法同车，吃子时必须隔着一枚棋子。</p></div><div><b>相</b><p><strong>田字守家</strong>走“田”字，不能过河；田字中心不能被挡。</p></div><div><b>仕</b><p><strong>宫中斜行</strong>只能在九宫内斜走一格，保护自己的帅。</p></div><div><b>帅</b><p><strong>坐镇九宫</strong>宫内横竖走一格；将帅不能在同一路直接照面。</p></div><div><b>兵</b><p><strong>只进不退</strong>每次向前一格，过河后也能左右走一格。</p></div><div><b>胜</b><p><strong>封住退路</strong>将死或使黑方无合法走法都算胜利。走后不能让自己被将军。</p></div></div><div class="help-scoring"><strong>闯关与星辰</strong><p>共 100 关、10 个章节。前 12 关是限步杀法，第 13～100 关为不限步数的实战，获胜即可解锁下一关。独立完成得 3 星；只使用提示或只悔棋得 2 星；两种都使用得 1 星。重复挑战保留最高星数。</p><p>旧版进度会自动保留。实战关与自由对弈中，普通局面三次重复或连续 120 手未吃子判和；连续将军造成第三次重复时，将军方判负。</p></div><button class="primary-button" data-close="help-dialog">知道了，落子吧 <svg><use href="#i-arrow"/></svg></button></dialog>
 
@@ -33128,7 +33153,7 @@
   let board, turn = 'r', history = [], selected = null, legalTargets = [], hintMove = null;
   let hintUsed = false, undoUsed = false, finished = null, busy = null, soundOn = false;
   let worker = null, workerUrl = null, jobId = 0, toastTimer, flashTimer, aiTimer, audioContext;
-  let storageOK = true, focusSquare = 81;
+  let storageOK = true, focusSquare = 81, introSeen = false;
 
   function toast(message) {
     clearTimeout(toastTimer);
@@ -33168,7 +33193,7 @@
 
   function save() {
     sessions[mode] = snapshot();
-    try { localStorage.setItem(SAVE_KEY, JSON.stringify({ version: 2, mode, progress, soundOn, difficulty: $('difficulty-select').value, sessions })); }
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify({ version: 2, mode, progress, soundOn, introSeen, difficulty: $('difficulty-select').value, sessions })); }
     catch (_) {
       storageOK = false;
       $('save-status').textContent = '浏览器未允许存档，本次仍可正常游玩';
@@ -33185,6 +33210,8 @@
         } catch (_) { /* A corrupt new save can still fall back to the preserved old save. */ }
       }
       if (!data) return;
+      // Existing players keep their current game without a first-launch prompt.
+      introSeen = data.introSeen !== false;
       if (Array.isArray(data.progress)) {
         progress = progress.map((_, i) => Number.isInteger(data.progress[i]) && data.progress[i] >= 0 && data.progress[i] <= 3 ? data.progress[i] : 0);
         for (let i = 1; i < progress.length; i++) if (!progress[i - 1]) progress[i] = 0;
@@ -33547,6 +33574,14 @@
   $('practice-tab').addEventListener('click', () => switchMode('practice'));
   $('undo-button').addEventListener('click', undo); $('hint-button').addEventListener('click', hint); $('restart-button').addEventListener('click', restart);
   $('help-button').addEventListener('click', () => $('help-dialog').showModal());
+  function finishIntro(showRules = false) {
+    introSeen = true; save(); $('welcome-dialog').close();
+    if (showRules) $('help-dialog').showModal();
+    else $('board-squares').children[board.findIndex(piece => piece && piece[0] === 'r')].focus();
+  }
+  $('welcome-start').addEventListener('click', () => finishIntro());
+  $('welcome-rules').addEventListener('click', () => finishIntro(true));
+  $('welcome-dialog').addEventListener('cancel', event => { event.preventDefault(); finishIntro(); });
   $('sound-button').addEventListener('click', () => { soundOn = !soundOn; save(); renderStatus(); if (soundOn) playSound('move'); });
   $('difficulty-select').addEventListener('change', () => { save(); render(); if (turn === 'b' && !finished) queueComputer(); toast('电脑棋力已更新。'); });
   $('chapter-select').addEventListener('change', () => { selectedChapter = Number($('chapter-select').value); renderJourney(); });
@@ -33560,6 +33595,7 @@
   window.addEventListener('pagehide', save);
   $('chapter-select').innerHTML = chapters.map((chapter, index) => `<option value="${index}">${String(index + 1).padStart(2, '0')} · ${chapter.title}（${index * 10 + 1}–${Math.min(levels.length, (index + 1) * 10)}）</option>`).join('');
   readSave(); buildBoard(); restoreSession(); render(); save();
+  if (!introSeen && mode === 'challenge' && levelIndex === 0 && history.length === 0 && !progress.some(Boolean)) $('welcome-dialog').showModal();
   if (finished) showResult(); else if (turn === 'b') queueComputer();
 })();
 

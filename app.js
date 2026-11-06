@@ -9,7 +9,7 @@
   let board, turn = 'r', history = [], selected = null, legalTargets = [], hintMove = null;
   let hintUsed = false, undoUsed = false, finished = null, busy = null, soundOn = false;
   let worker = null, workerUrl = null, jobId = 0, toastTimer, flashTimer, aiTimer, audioContext;
-  let storageOK = true, focusSquare = 81;
+  let storageOK = true, focusSquare = 81, introSeen = false;
 
   function toast(message) {
     clearTimeout(toastTimer);
@@ -49,7 +49,7 @@
 
   function save() {
     sessions[mode] = snapshot();
-    try { localStorage.setItem(SAVE_KEY, JSON.stringify({ version: 2, mode, progress, soundOn, difficulty: $('difficulty-select').value, sessions })); }
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify({ version: 2, mode, progress, soundOn, introSeen, difficulty: $('difficulty-select').value, sessions })); }
     catch (_) {
       storageOK = false;
       $('save-status').textContent = '浏览器未允许存档，本次仍可正常游玩';
@@ -66,6 +66,8 @@
         } catch (_) { /* A corrupt new save can still fall back to the preserved old save. */ }
       }
       if (!data) return;
+      // Existing players keep their current game without a first-launch prompt.
+      introSeen = data.introSeen !== false;
       if (Array.isArray(data.progress)) {
         progress = progress.map((_, i) => Number.isInteger(data.progress[i]) && data.progress[i] >= 0 && data.progress[i] <= 3 ? data.progress[i] : 0);
         for (let i = 1; i < progress.length; i++) if (!progress[i - 1]) progress[i] = 0;
@@ -428,6 +430,14 @@
   $('practice-tab').addEventListener('click', () => switchMode('practice'));
   $('undo-button').addEventListener('click', undo); $('hint-button').addEventListener('click', hint); $('restart-button').addEventListener('click', restart);
   $('help-button').addEventListener('click', () => $('help-dialog').showModal());
+  function finishIntro(showRules = false) {
+    introSeen = true; save(); $('welcome-dialog').close();
+    if (showRules) $('help-dialog').showModal();
+    else $('board-squares').children[board.findIndex(piece => piece && piece[0] === 'r')].focus();
+  }
+  $('welcome-start').addEventListener('click', () => finishIntro());
+  $('welcome-rules').addEventListener('click', () => finishIntro(true));
+  $('welcome-dialog').addEventListener('cancel', event => { event.preventDefault(); finishIntro(); });
   $('sound-button').addEventListener('click', () => { soundOn = !soundOn; save(); renderStatus(); if (soundOn) playSound('move'); });
   $('difficulty-select').addEventListener('change', () => { save(); render(); if (turn === 'b' && !finished) queueComputer(); toast('电脑棋力已更新。'); });
   $('chapter-select').addEventListener('change', () => { selectedChapter = Number($('chapter-select').value); renderJourney(); });
@@ -441,5 +451,6 @@
   window.addEventListener('pagehide', save);
   $('chapter-select').innerHTML = chapters.map((chapter, index) => `<option value="${index}">${String(index + 1).padStart(2, '0')} · ${chapter.title}（${index * 10 + 1}–${Math.min(levels.length, (index + 1) * 10)}）</option>`).join('');
   readSave(); buildBoard(); restoreSession(); render(); save();
+  if (!introSeen && mode === 'challenge' && levelIndex === 0 && history.length === 0 && !progress.some(Boolean)) $('welcome-dialog').showModal();
   if (finished) showResult(); else if (turn === 'b') queueComputer();
 })();

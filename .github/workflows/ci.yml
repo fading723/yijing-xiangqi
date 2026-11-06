@@ -19,6 +19,21 @@ jobs:
       - name: Test rules, campaign and saved games
         run: npm test
       - name: Build offline game
-        run: npm run build
+        run: npm run package
       - name: Verify committed offline game
         run: git diff --exit-code -- '弈境-离线版.html'
+      - name: Verify player downloads
+        shell: python
+        run: |
+          import hashlib, pathlib, zipfile
+          root = pathlib.Path('.')
+          game = (root / '弈境-离线版.html').read_bytes()
+          assert (root / 'dist/Yijing-Xiangqi.html').read_bytes() == game
+          with zipfile.ZipFile('dist/Yijing-Xiangqi.zip') as package:
+              assert package.testzip() is None
+              assert package.namelist() == ['开始游戏.html', '怎么玩.txt']
+              assert package.read('开始游戏.html') == game
+              assert '双击' in package.read('怎么玩.txt').decode('utf-8-sig')
+          for line in pathlib.Path('dist/SHA256SUMS.txt').read_text().splitlines():
+              digest, name = line.split('  ')
+              assert hashlib.sha256((root / 'dist' / name).read_bytes()).hexdigest() == digest

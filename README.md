@@ -4,9 +4,9 @@
 
 弈境是一款可离线游玩的中国象棋游戏。沿着 10 个章节挑战 100 个关卡，从经典杀法走向长线残局与完整对局，在每一盘棋中练习判断、配合与攻守。
 
-下载一个 HTML 文件，用浏览器打开，即可开始棋旅。
+下载游戏，双击打开，即可开始棋旅。无需安装，无需注册，下载后全程离线。
 
-[下载离线版](./弈境-离线版.html?raw=1) · [开始游玩](#开始游玩) · [关卡旅程](#关卡旅程) · [本地开发](#本地开发)
+**[立即下载游戏](https://github.com/fading723/yijing-xiangqi/releases/latest/download/Yijing-Xiangqi.html)** · [下载压缩包](https://github.com/fading723/yijing-xiangqi/releases/latest/download/Yijing-Xiangqi.zip) · [版本更新](https://github.com/fading723/yijing-xiangqi/releases/latest) · [开始游玩](#开始游玩)
 
 ![弈境实战关卡界面](docs/images/gameplay.jpg)
 
@@ -14,6 +14,7 @@
 
 | 功能 | 说明 |
 | --- | --- |
+| 新手引导 | 首次打开介绍选棋、落子和闯关，随时查看棋子走法 |
 | 百关棋旅 | 100 个固定关卡、10 个章节，通关后逐步解锁 |
 | 渐进挑战 | 从多子优势到均势对弈，电脑棋力随章节提升 |
 | 长线实战 | 第 13～100 关不限步数，持续对弈至分出胜负 |
@@ -26,13 +27,15 @@
 
 ## 开始游玩
 
-1. 下载仓库中的 **[弈境-离线版.html](./弈境-离线版.html?raw=1)**。
-2. 用 Edge、Chrome 或 Firefox 打开文件。
-3. 选择关卡，执红先行，开始挑战。
+1. 点击 **[立即下载游戏](https://github.com/fading723/yijing-xiangqi/releases/latest/download/Yijing-Xiangqi.html)**，保存 `Yijing-Xiangqi.html`。
+2. **双击下载的文件**，浏览器打开后，点击「开始下棋」。
+3. 点一枚红棋，再点亮起的位置落子，开始挑战。
 
-游戏采用单文件打包，直接打开即可运行。电脑对手、提示和存档均可离线使用。
+支持 Windows、macOS 和 Linux 电脑，推荐使用 Edge、Chrome 或 Firefox。若双击没有进入游戏，右键选择「打开方式」，再选择浏览器。
 
-也可以下载整个项目，解压后打开 `index.html`。
+也可以 **[下载压缩包](https://github.com/fading723/yijing-xiangqi/releases/latest/download/Yijing-Xiangqi.zip)**，解压后双击 **`开始游戏.html`**。压缩包附有中文《怎么玩》，可以直接分享给亲友。
+
+游戏采用单文件打包，电脑对手、提示、音效和存档均可离线使用。Release 页的 **Assets** 提供游戏文件；选择上面的下载按钮即可直接获取成品。
 
 ### 基本操作
 
@@ -85,6 +88,8 @@
 
 进度保存在当前浏览器的本地存储中。使用同一浏览器、同一文件位置打开游戏，即可继续棋局。
 
+更新时先关闭游戏，用新版文件替换原位置的同名 HTML，再用原来的浏览器打开。使用普通浏览窗口并保留浏览器本地数据，可以持续保存进度。
+
 闯关与自由对弈分别保存棋局，星数、音效和电脑棋力设置一并保存。100 关版本自动承接原版 12 关的进度，并保留原存档。
 
 ## 本地开发
@@ -98,6 +103,9 @@ npm test
 # 构建单文件离线版
 npm run build
 
+# 制作供玩家下载的 HTML、ZIP 和校验文件
+npm run package
+
 # 启动本机预览
 npm run preview
 
@@ -108,6 +116,8 @@ npm run campaign
 预览地址：<http://127.0.0.1:8765>。
 
 开发命令使用 Node.js 内置模块，直接运行即可。修改源码后执行 `npm run build`，更新 `弈境-离线版.html`。
+
+`npm run package` 在 `dist/` 生成 `Yijing-Xiangqi.html`、`Yijing-Xiangqi.zip` 和 `SHA256SUMS.txt`。ZIP 中包含完整的 `开始游戏.html` 和 `怎么玩.txt`，采用 UTF-8 文件名与固定时间戳，可重复构建。
 
 ### 项目结构
 

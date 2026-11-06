@@ -4,6 +4,17 @@
 
 @media (min-width: 641px) { .play-panel { width: 100%; max-width: min(580px, calc((100svh - 150px) * .86)); margin-inline: auto; } }
 
+.welcome-dialog { width:480px; max-width:calc(100vw - 32px); }
+.welcome-dialog h2 { font:30px var(--serif); margin:12px 0; }
+.welcome-steps { padding-left:25px; margin:24px 0; }
+.welcome-steps li { padding:0 0 16px 8px; color:var(--green); }
+.welcome-steps strong,.welcome-steps span { display:block; }
+.welcome-steps strong { font-size:15px; }
+.welcome-steps span { color:#777e6f; font-size:12px; margin-top:4px; }
+.welcome-tip { font-size:12px; color:#777e6f; background:#edf0e3; padding:14px; border-radius:6px; margin:0 0 22px; }
+.welcome-dialog .text-button { display:block; margin:14px auto 0; }
+@media(max-width:640px) { .welcome-dialog { padding:28px 23px; } }
+
 /* Ten chapters keep the hundred-level campaign easy to browse on every screen. */
 .chapter-picker select { width:100%; min-width:0; border:1px solid #dce1d0; border-radius:5px; padding:9px 7px; background:#f5f6ec; color:#526649; font-size:11px; }
 .chapter-description { font-size:9px; color:#969d88; line-height:1.8; margin:10px 1px 13px; }

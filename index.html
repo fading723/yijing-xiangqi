@@ -98,6 +98,20 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div class="sr-only" id="live-status" aria-live="polite"></div>
 
+  <dialog id="welcome-dialog" class="welcome-dialog" aria-labelledby="welcome-title" aria-describedby="welcome-intro">
+    <span class="eyebrow">弈境 · 百关象棋</span>
+    <h2 id="welcome-title">你的第一步好棋。</h2>
+    <p id="welcome-intro" class="dialog-subtitle">你执红棋，电脑执黑棋。三步就能开始。</p>
+    <ol class="welcome-steps">
+      <li><strong>选一枚红棋</strong><span>点一下，棋盘就会标出可走的位置。</span></li>
+      <li><strong>点亮起的落点</strong><span>绿点可以落子，圈起的黑棋可以吃掉。</span></li>
+      <li><strong>和电脑轮流走</strong><span>封住黑将的退路，赢一关，解锁下一关。</span></li>
+    </ol>
+    <p class="welcome-tip">拿不准就点「给点提示」，想换个思路就点「悔一步」。进度自动保存，下次接着下。</p>
+    <button id="welcome-start" class="primary-button" autofocus>开始下棋 <svg><use href="#i-arrow"/></svg></button>
+    <button id="welcome-rules" class="text-button">先看看棋子怎么走</button>
+  </dialog>
+
   <dialog id="help-dialog" class="help-dialog"><button class="dialog-close icon-button" data-close="help-dialog" aria-label="关闭玩法说明"><svg><use href="#i-close"/></svg></button><span class="eyebrow">A LITTLE GUIDE</span><h2>落子之前，认识一下。</h2><p class="dialog-subtitle">你执红，电脑执黑。点选棋子，再点击亮起的位置落子。</p><div class="help-grid"><div><b>车</b><p><strong>直来直往</strong>沿横线、竖线行走，途中不能有棋子。</p></div><div><b>马</b><p><strong>日字出发</strong>走“日”字；直行第一格被占，就是蹩马腿。</p></div><div><b>炮</b><p><strong>隔子打子</strong>平时走法同车，吃子时必须隔着一枚棋子。</p></div><div><b>相</b><p><strong>田字守家</strong>走“田”字，不能过河；田字中心不能被挡。</p></div><div><b>仕</b><p><strong>宫中斜行</strong>只能在九宫内斜走一格，保护自己的帅。</p></div><div><b>帅</b><p><strong>坐镇九宫</strong>宫内横竖走一格；将帅不能在同一路直接照面。</p></div><div><b>兵</b><p><strong>只进不退</strong>每次向前一格，过河后也能左右走一格。</p></div><div><b>胜</b><p><strong>封住退路</strong>将死或使黑方无合法走法都算胜利。走后不能让自己被将军。</p></div></div><div class="help-scoring"><strong>闯关与星辰</strong><p>共 100 关、10 个章节。前 12 关是限步杀法，第 13～100 关为不限步数的实战，获胜即可解锁下一关。独立完成得 3 星；只使用提示或只悔棋得 2 星；两种都使用得 1 星。重复挑战保留最高星数。</p><p>旧版进度会自动保留。实战关与自由对弈中，普通局面三次重复或连续 120 手未吃子判和；连续将军造成第三次重复时，将军方判负。</p></div><button class="primary-button" data-close="help-dialog">知道了，落子吧 <svg><use href="#i-arrow"/></svg></button></dialog>
 
   <dialog id="result-dialog" class="result-dialog"><button class="dialog-close icon-button" data-close="result-dialog" aria-label="关闭结果查看棋盘"><svg><use href="#i-close"/></svg></button><div class="result-seal" id="result-seal">胜</div><span class="eyebrow" id="result-eyebrow">A BEAUTIFUL MOVE</span><h2 id="result-title">此局，已破。</h2><div class="result-stars" id="result-stars">✦ ✦ ✦</div><p id="result-message"></p><div class="result-lesson" id="result-lesson"></div><button class="primary-button" id="next-button">继续下一关 <svg><use href="#i-arrow"/></svg></button><button class="text-button" id="retry-button">再品一局</button></dialog>
