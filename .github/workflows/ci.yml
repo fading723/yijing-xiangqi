@@ -1,0 +1,24 @@
+name: Project checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Test rules, campaign and saved games
+        run: npm test
+      - name: Build offline game
+        run: npm run build
+      - name: Verify committed offline game
+        run: git diff --exit-code -- '弈境-离线版.html'

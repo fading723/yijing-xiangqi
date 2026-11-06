@@ -1,0 +1,16 @@
+node_modules/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.codex/
+.agents/
+.tools/
+.tmp/
+/游戏预览.jpg
+/百关实战预览.jpg

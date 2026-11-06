@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f2e9">
+  <meta name="description" content="弈境，100 关离线象棋。从入门杀法到不限步数的实战，走完十章棋路。">
+  <title>弈境 · 象棋闯关</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23283931'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='42' fill='%23f3dec0'%3E弈%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script src="engine.js" defer></script>
+  <script src="campaign-design.js" defer></script>
+  <script src="campaign-data.js" defer></script>
+  <script src="levels.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M8 4 3 9l5 5M3 9h11a6 6 0 0 1 0 12"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 10a9 9 0 1 1 1 7M3 4v6h6"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M8 17h8m-7 4h6M8 17v-2a7 7 0 1 1 8 0v2M12 1v2"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="m11 4-6 5H2v6h3l6 5V4Zm4 4a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-mute" viewBox="0 0 24 24"><path d="m11 4-6 5H2v6h3l6 5V4Zm5 5 6 6m0-6-6 6"/></symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M20 3C8 1 2 8 5 15s17 4 15-12ZM3 21 15 9M8 16v-5m0 5h5"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5v16M3 3h5a4 4 0 0 1 4 3 4 4 0 0 1 4-3h5v16h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3V3Z"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 22V3c5-4 9 4 15 0v11c-6 4-10-4-15 0"/></symbol>
+  </svg>
+
+  <header class="site-header">
+    <a class="brand" href="./index.html" aria-label="弈境首页"><span class="brand-seal">弈</span><span class="brand-name">弈境<small>XIANGQI JOURNEY</small></span></a>
+    <nav class="main-nav" aria-label="游戏模式">
+      <button class="nav-tab active" id="challenge-tab" aria-pressed="true">百关棋旅<span>CHALLENGE</span></button>
+      <button class="nav-tab" id="practice-tab" aria-pressed="false">自由对弈<span>PRACTICE</span></button>
+    </nav>
+    <div class="header-actions"><span class="offline"><i></i> 离线也自在</span><button class="icon-button sound-button" id="sound-button" aria-label="开启音效" aria-pressed="false"><svg><use href="#i-mute"/></svg></button><button class="help-button" id="help-button"><svg><use href="#i-book"/></svg><span>怎么玩</span></button></div>
+  </header>
+
+  <main>
+    <section class="page-heading">
+      <div><div class="eyebrow"><span></span> 一方棋盘 · 一段旅程</div><h1>一着入局，<em>步步生花。</em></h1><p>从容落子，慢慢破局。在方寸之间，找到你的下一步。</p></div>
+      <div class="journey-stats"><div><strong id="completed-count">00</strong><span>已过关卡</span></div><i></i><div><strong id="star-count">00<span> / 300</span></strong><span>收集星辰</span></div></div>
+    </section>
+
+    <div class="game-layout">
+      <aside class="journey-panel" aria-label="关卡选择">
+        <div class="panel-heading"><div><span class="eyebrow">100 LEVELS · 10 CHAPTERS</span><h2>百关棋旅</h2></div><span class="chapter-badge" id="chapter-badge">壹</span></div>
+        <div class="progress-label"><span>闯关进度</span><strong id="progress-label">0 / 100</strong></div>
+        <div class="progress-track"><span id="progress-fill"></span></div>
+        <div class="chapter-picker"><label for="chapter-select" class="sr-only">选择章节</label><select id="chapter-select"></select></div>
+        <p class="chapter-description" id="chapter-description">先学封路，再学将军</p>
+        <div class="level-list" id="level-list"></div>
+        <div class="chapter-navigation"><button id="previous-chapter" aria-label="上一章">‹</button><span id="chapter-page">1 / 10 章</span><button id="next-chapter" aria-label="下一章">›</button></div>
+        <button class="continue-journey" id="continue-journey">回到当前关卡 <svg><use href="#i-arrow"/></svg></button>
+        <div class="journey-note"><svg><use href="#i-leaf"/></svg><p>不必着急，每一步<br>都算数。</p></div>
+      </aside>
+
+      <section class="play-panel" aria-label="棋盘与操作">
+        <div class="board-topbar"><div class="turn-label" id="turn-label"><span class="turn-dot"></span><strong>红方先行</strong><span>你执红棋</span></div><span class="board-mode" id="board-mode">残局挑战</span></div>
+        <div class="board-frame">
+          <div class="board" id="board" role="group" aria-label="中国象棋棋盘，红方在下，黑方在上">
+            <svg class="board-art" viewBox="0 0 540 600" aria-hidden="true" id="board-art"></svg>
+            <svg class="hint-arrow" viewBox="0 0 540 600" aria-hidden="true" id="hint-arrow"><defs><marker id="arrowhead" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#b37d37"/></marker></defs><path id="hint-path"/></svg>
+            <div class="board-squares" id="board-squares"></div>
+            <div class="board-flash" id="board-flash" aria-hidden="true">将军</div>
+          </div>
+        </div>
+        <div class="board-bottombar"><span class="player-badge">帅</span><span>你 · 红方</span><span class="board-tip" id="board-tip">点选棋子，开始破局</span><span class="small-dot"></span><span id="opponent-label">电脑 · 黑方</span></div>
+        <div class="board-controls"><button id="undo-button"><svg><use href="#i-undo"/></svg>悔一步</button><span></span><button id="hint-button"><svg><use href="#i-bulb"/></svg>给点提示</button><span></span><button id="restart-button"><svg><use href="#i-reset"/></svg>重新开始</button></div>
+        <p class="keyboard-tip">点击棋子查看可走位置 <span>·</span> 方向键移动焦点，回车落子 <span>·</span> Esc 取消选择</p>
+      </section>
+
+      <aside class="details-panel">
+        <section class="level-detail">
+          <div class="level-eyebrow"><span id="level-number">第 01 关</span><span class="difficulty" id="difficulty"><i></i><i></i><i></i> 入门</span></div>
+          <h2 id="level-title">一车定乾坤</h2>
+          <span class="theme-tag" id="theme-tag">白脸将</span>
+          <p class="level-intro" id="level-intro"></p>
+          <div class="objective"><svg><use href="#i-flag"/></svg><div><span>本关目标</span><strong id="objective-text">1 步内击败黑方</strong><small id="objective-note">红方走一次计为一步</small></div></div>
+          <div class="battle-note" id="battle-note" hidden><span>长线实战</span><p id="battle-description">不限步数，直到将死或困毙黑方。随时关闭，下次接着下。</p></div>
+          <div class="move-budget"><div><span id="moves-label">已用步数</span><strong><span id="move-count">0</span><small id="move-limit"> / 1</small></strong></div><div class="budget-dots" id="budget-dots"></div></div>
+          <div class="rating-rule" id="rating-rule"><span>✦ ✦ ✦</span> 不用提示和悔棋，点亮三星</div>
+          <div class="practice-settings" id="practice-settings" hidden><label for="difficulty-select">电脑棋力</label><select id="difficulty-select"><option value="2">入门 · 慢慢来</option><option value="3" selected>进阶 · 有来有往</option><option value="4">挑战 · 认真一局</option></select></div>
+        </section>
+
+        <section class="insight-card"><div class="insight-heading"><svg><use href="#i-bulb"/></svg><h3>棋中有意</h3><span>TIP</span></div><p id="insight-text">先看清将的退路，再想想如何把它们一一封住。</p><div class="ink-decoration" aria-hidden="true">棋</div></section>
+
+        <section class="moves-card"><div class="moves-heading"><h3>落子记录</h3><span id="history-count">0 手</span></div><div class="move-history" id="move-history"><div class="empty-history"><span>—</span><p>好棋，从第一步开始</p></div></div></section>
+        <div class="save-status" id="save-status"><svg><use href="#i-check"/></svg>进度自动保存在此浏览器</div>
+      </aside>
+    </div>
+    <footer><span>弈境 <i>·</i> 方寸之间，自有天地。</span><span>无需联网 <i>·</i> 随时续上你的棋局</span></footer>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div class="sr-only" id="live-status" aria-live="polite"></div>
+
+  <dialog id="help-dialog" class="help-dialog"><button class="dialog-close icon-button" data-close="help-dialog" aria-label="关闭玩法说明"><svg><use href="#i-close"/></svg></button><span class="eyebrow">A LITTLE GUIDE</span><h2>落子之前，认识一下。</h2><p class="dialog-subtitle">你执红，电脑执黑。点选棋子，再点击亮起的位置落子。</p><div class="help-grid"><div><b>车</b><p><strong>直来直往</strong>沿横线、竖线行走，途中不能有棋子。</p></div><div><b>马</b><p><strong>日字出发</strong>走“日”字；直行第一格被占，就是蹩马腿。</p></div><div><b>炮</b><p><strong>隔子打子</strong>平时走法同车，吃子时必须隔着一枚棋子。</p></div><div><b>相</b><p><strong>田字守家</strong>走“田”字，不能过河；田字中心不能被挡。</p></div><div><b>仕</b><p><strong>宫中斜行</strong>只能在九宫内斜走一格，保护自己的帅。</p></div><div><b>帅</b><p><strong>坐镇九宫</strong>宫内横竖走一格；将帅不能在同一路直接照面。</p></div><div><b>兵</b><p><strong>只进不退</strong>每次向前一格，过河后也能左右走一格。</p></div><div><b>胜</b><p><strong>封住退路</strong>将死或使黑方无合法走法都算胜利。走后不能让自己被将军。</p></div></div><div class="help-scoring"><strong>闯关与星辰</strong><p>共 100 关、10 个章节。前 12 关是限步杀法，第 13～100 关为不限步数的实战，获胜即可解锁下一关。独立完成得 3 星；只使用提示或只悔棋得 2 星；两种都使用得 1 星。重复挑战保留最高星数。</p><p>旧版进度会自动保留。实战关与自由对弈中，普通局面三次重复或连续 120 手未吃子判和；连续将军造成第三次重复时，将军方判负。</p></div><button class="primary-button" data-close="help-dialog">知道了，落子吧 <svg><use href="#i-arrow"/></svg></button></dialog>
+
+  <dialog id="result-dialog" class="result-dialog"><button class="dialog-close icon-button" data-close="result-dialog" aria-label="关闭结果查看棋盘"><svg><use href="#i-close"/></svg></button><div class="result-seal" id="result-seal">胜</div><span class="eyebrow" id="result-eyebrow">A BEAUTIFUL MOVE</span><h2 id="result-title">此局，已破。</h2><div class="result-stars" id="result-stars">✦ ✦ ✦</div><p id="result-message"></p><div class="result-lesson" id="result-lesson"></div><button class="primary-button" id="next-button">继续下一关 <svg><use href="#i-arrow"/></svg></button><button class="text-button" id="retry-button">再品一局</button></dialog>
+  <noscript><div class="noscript">请在浏览器中启用 JavaScript，即可离线游玩。</div></noscript>
+</body>
+</html>

@@ -1,0 +1,13 @@
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.resolve(__dirname, '..');
+let html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+html = html.replace('  <link rel="stylesheet" href="style.css">', () => '  <style>\n' + fs.readFileSync(path.join(root, 'style.css'), 'utf8').replace(/^@charset[^;]+;\s*/, '') + '\n  </style>');
+const sources = ['engine.js', 'campaign-design.js', 'campaign-data.js', 'levels.js', 'app.js'];
+for (const name of sources) html = html.replace(`  <script src="${name}" defer></script>\n`, '');
+const scripts = sources.map(name => '<script>\n' + fs.readFileSync(path.join(root, name), 'utf8').replace(/<\/script/gi, '<\\/script') + '\n</script>').join('\n');
+html = html.replace('</body>', () => scripts + '\n</body>');
+html = html.replace('href="./index.html"', 'href="#"');
+fs.writeFileSync(path.join(root, '弈境-离线版.html'), html, 'utf8');
+console.log('Built 弈境-离线版.html (' + Math.round(Buffer.byteLength(html) / 1024) + ' KB), no external resources.');

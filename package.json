@@ -1,0 +1,15 @@
+{
+  "name": "yijing-offline-xiangqi",
+  "version": "2.0.0",
+  "private": true,
+  "description": "弈境 · 百关象棋：100 个渐进关卡、自由对弈与完整离线体验。",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "campaign": "node scripts/generate-campaign.js",
+    "test": "node --test",
+    "preview": "node scripts/preview.js"
+  }
+}

@@ -1,0 +1,55 @@
+(function (root) {
+  'use strict';
+  // Each chapter changes both the position's material balance and search budget.
+  // Node budgets make difficulty reproducible; time limits keep slower devices responsive.
+  const chapters = [
+    { title: '初识杀法', subtitle: '先学封路，再学将军', rank: '入门', depth: 2, nodes: 1200, timeMs: 500 },
+    { title: '残局远行', subtitle: '从短杀走向不限步数的残局', rank: '启程', depth: 2, nodes: 1600, timeMs: 550,
+      red: 'RNPPP', black: 'NPP', setupRounds: 8,
+      intro: '红方多一辆车，黑方士象仍在。先让车马与兵相互照应，再慢慢逼近九宫。',
+      lesson: '多车时不必急于连续将军。先清理黑卒、保护红兵，再用车切断将的退路。',
+      titles: ['车马开远路', '长车渡楚河', '兵锋探柳岸', '借马护长车', '两翼慢收网', '过河不冒进', '守中再取边', '残局第一程'] },
+    { title: '兵锋渐进', subtitle: '用多子优势经营每一步', rank: '小成', depth: 2, nodes: 2400, timeMs: 650,
+      red: 'RCNPPP', black: 'RNPPP', setupRounds: 9,
+      intro: '红方多一门炮，但黑车和黑马仍有反击。连接车炮，推进兵线，别让多子优势白白丢掉。',
+      lesson: '优势局先看对方的将军和吃子，再决定如何进攻。炮要找架，车要找路，兵要有保护。',
+      titles: ['兵锋先落脚', '架炮过河桥', '车马守相望', '长线取边卒', '中路添一援', '借势开炮路', '缓进有后手', '护兵穿河岸', '两路同进退', '稳稳收残局'] },
+    { title: '车马纵横', subtitle: '在攻守转换中保住优势', rank: '熟练', depth: 3, nodes: 3400, timeMs: 750,
+      red: 'RNCPPPP', black: 'RCPPPP', setupRounds: 10,
+      intro: '红方多一匹马。双方都有车炮，先让马找到支点，再把优势转化为攻势。',
+      lesson: '车马炮要分工。马照顾关键格，车争夺通路，炮寻找炮架；落子前检查有没有失去保护的棋子。',
+      titles: ['策马向中原', '长车护马前', '回马再出锋', '边路见机行', '车马隔河望', '避锋寻马位', '稳住中路兵', '交换留余力', '前后相照应', '纵横有章法'] },
+    { title: '炮火相济', subtitle: '让复杂子力各尽其用', rank: '进阶', depth: 3, nodes: 4600, timeMs: 850,
+      red: 'RRNCPPPP', black: 'RRNPPPPP', setupRounds: 10,
+      intro: '双车在场，红方多一门炮、少一个兵。局面更拥挤了，先疏通子力，再决定主攻方向。',
+      lesson: '子多时更要防止互相阻挡。双车掌握开放线路，炮在后方寻找可持续的威胁。',
+      titles: ['双车开炮路', '借架遥相应', '炮镇河界边', '兵线上布阵', '穿宫先护后', '重子要联络', '移形换攻线', '一翼先集结', '攻守留余地', '炮火接长风'] },
+    { title: '中盘磨砺', subtitle: '把兵的优势慢慢积累', rank: '进阶', depth: 3, nodes: 6200, timeMs: 950,
+      red: 'RRNNCCPPPPP', black: 'RRNNCCPPP', setupRounds: 11,
+      intro: '双方大子齐全，红方只多两个兵。稳住阵型，用兵的优势争取更好的位置。',
+      lesson: '大子力量相近时，别急着兑换所有兵。保留能过河的兵，积累空间后再寻找突破。',
+      titles: ['中盘先稳阵', '两兵拓疆土', '兵多须善用', '换子看得失', '河口争一线', '中兵牵两翼', '远兵留后劲', '双马各寻路', '顺势换强子', '磨砺见真章'] },
+    { title: '攻守兼修', subtitle: '从小优势走向耐心对弈', rank: '挑战', depth: 4, nodes: 8200, timeMs: 1100,
+      red: 'RRNNCCPPPPP', black: 'RRNNCCPPPP', setupRounds: 11,
+      intro: '红方仅多一个兵，黑方的反击更认真。攻守兼顾，把小优势慢慢变成胜势。',
+      lesson: '小优势需要耐心。每次交换都要重新判断，确保自己的帅安全，再寻找对方防线的薄弱处。',
+      titles: ['一兵也是势', '守好再争先', '轻重分缓急', '边中两相顾', '双车不离群', '进退留转身', '护帅再出击', '兑换留好兵', '耐心寻破绽', '攻守两相宜'] },
+    { title: '均势争锋', subtitle: '同等子力，争取主动', rank: '挑战', depth: 4, nodes: 11000, timeMs: 1250,
+      red: 'RRNNCCPPPPP', black: 'RRNNCCPPPPP', setupRounds: 8,
+      intro: '双方子力相同，从已经展开的阵型接着下。主动权要靠配合与计算争取。',
+      lesson: '均势时不要只盯着将军。改善位置、制造两处威胁，并随时防范对方的反击。',
+      titles: ['中炮争主动', '飞相蓄后势', '仙人先问路', '仕角试锋芒', '过宫寻新线', '挺兵占中原', '正马护双翼', '边兵开一隅', '双马渡河界', '均势见高下'] },
+    { title: '布局深耕', subtitle: '从布局开始，下一盘完整的棋', rank: '高手', depth: 4, nodes: 14500, timeMs: 1450,
+      red: 'RRNNCCPPPPP', black: 'RRNNCCPPPPP', setupRounds: 5,
+      intro: '从开局的不同阵型开始，双方子力齐全。出子、争先、中盘、收官，都由你掌握。',
+      lesson: '先出动大子，保持车马炮联系。开局的一点效率，会影响后面的整盘棋。',
+      titles: ['当头炮启程', '飞相守中求', '仙人指远路', '仕角炮开篇', '过宫行远道', '中兵问先手', '起马向长局', '挺边探虚实', '双马起雄风', '布局通中局'] },
+    { title: '百局归心', subtitle: '完整对局，迎接最后的挑战', rank: '终章', depth: 5, nodes: 19000, timeMs: 1700,
+      red: 'RRNNCCPPPPP', black: 'RRNNCCPPPPP', setupRounds: 2,
+      intro: '从开局继续一盘真正的较量。电脑会更仔细地计算，稳住每一步，直到分出胜负。',
+      lesson: '把一路学到的封路、配合与攻守判断用在完整对局里。棋局没有步数倒计时，可以从容思考。',
+      titles: ['中炮迎强手', '飞相听风起', '仙人会群雄', '仕角藏深意', '过宫见天地', '中兵争高峰', '起马向山巅', '边路入云端', '双马踏归途', '百局见初心'] }
+  ];
+  root.XiangqiChapters = chapters;
+  if (typeof module !== 'undefined' && module.exports) module.exports = chapters;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
